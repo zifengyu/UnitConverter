@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="planets_array">
+        <item>货币</item>
+        <item>长度</item>
+        <item>面积</item>
+        <item>体积</item>
+        <item>质量</item>
+        <item>温度</item>
+        <item>时间</item>
+        <item>速度</item>
+        <item>角度</item>
+        <item>热量</item>
+        <item>功率</item>
+        <item>压力</item>        
+        <item>力</item>        
+    </string-array>
+
+</resources>

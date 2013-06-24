@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">单位换算</string>       
+    <string name="action_settings">宝贵的意见与建议</string>   
+    
+    <string name="drawer_title">选择分类</string>
+    <string name="drawer_open">打开</string>
+    <string name="drawer_close">关闭</string>
+    
+    <string name="update_message">汇率更新完毕</string>
+
+</resources>
