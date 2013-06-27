@@ -9,7 +9,7 @@
         android:layout_weight="1"
              
         android:layout_marginLeft="16dip"
-        android:layout_marginTop="8dip"
+        android:layout_marginTop="4dip"
         android:paddingLeft="8dip"
         android:paddingRight="8dip"
         android:gravity="center_vertical|right"
@@ -23,7 +23,7 @@
         android:id="@+id/unit_label"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginTop="8dip"        
+        android:layout_marginTop="4dip"        
         android:layout_marginLeft="8dip"
         android:layout_marginRight="4dip"
         

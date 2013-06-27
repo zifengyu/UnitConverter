@@ -14,6 +14,7 @@
             android:layout_height="wrap_content"
             android:stretchColumns="0" >
 
+            <!-- 
             <TableRow android:layout_width="match_parent" >
 
                 <LinearLayout
@@ -22,5 +23,6 @@
                     android:layout_height="50dip"
                     android:gravity="center_horizontal" />
             </TableRow>
+            -->
         </TableLayout>
     </ScrollView>

@@ -6,7 +6,8 @@ import cn.waps.AdView;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
+
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -52,8 +53,7 @@ public class UnitFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 
-		int listIndex = getArguments().getInt(ARG_UNIT_LIST, 0);
-		boolean showAd = getArguments().getBoolean(ARG_SHOW_AD, false);
+		int listIndex = getArguments().getInt(ARG_UNIT_LIST, 0);		
 
 		if (listIndex >= 0 && listIndex < allUnitList.length) {
 			unitList = allUnitList[getArguments().getInt(ARG_UNIT_LIST)];
@@ -94,11 +94,6 @@ public class UnitFragment extends Fragment {
 			tableLayout.addView(rowView);
 		}
 
-		if (showAd) {
-			LinearLayout adContainer = (LinearLayout)view.findViewById(R.id.AdLinearLayout); 
-			new AdView(container.getContext(), adContainer).DisplayAd();
-		}
-		
 		updateEditText(-1);
 
 		return view;

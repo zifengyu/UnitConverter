@@ -8,55 +8,58 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+
 import cn.waps.AppConnect;
-import cn.waps.UpdatePointsNotifier;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
+import android.view.KeyEvent;
+//import android.app.Fragment;
+//import android.app.FragmentManager;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements UpdatePointsNotifier {
+public class MainActivity extends SlidingFragmentActivity {
 
-	private float[] currencyRate = {6.1335f, 0.643f, 0.7567f, 7.7621f, 7.9883f, 29.7350f, 97.55f, 1.0185f, 1.0515f, 1.271f, 0.9355f, 1.2480f};
-	long lastInternet = 0;
+	public static MainActivity mainActivity;
+
+	private DownloadCurrencyTask downloadTask = null;
 
 	private String[] mPlanetTitles;
-	private ListView mDrawerList;
 
-	private CharSequence mDrawerTitle;
-	private CharSequence mTitle;
+	private float[] currencyRate = {6.1451f, 0.64737f, 0.76185f, 7.75799f, 7.9856f, 30.128f, 97.69f, 1.0504f, 1.082f, 1.291f, 0.933f, 1.2743f};
+	long lastInternet = 0;
 
-	private DrawerLayout mDrawerLayout;
-	private ActionBarDrawerToggle mDrawerToggle;
+	private SlidingMenu menu;
 
 	private int currentPosition;
-
-	private boolean showAd = false;
-	public static int score = 0;
+	private ListFragment mFrag;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);	
+
+		getSupportActionBar().setIcon(R.drawable.drawer_icon);
+		getSupportActionBar().setHomeButtonEnabled(true);
+
+		mainActivity = this;
+
 		AppConnect.getInstance(this);
+
+		mPlanetTitles = getResources().getStringArray(R.array.planets_array);
 
 		/* Load currency */
 		SharedPreferences pref = getPreferences(MODE_PRIVATE);
@@ -64,67 +67,53 @@ public class MainActivity extends Activity implements UpdatePointsNotifier {
 			currencyRate[i] = pref.getFloat("com.bbpp.unitconverter.currencyrate" + i, currencyRate[i]);
 		UnitList.setCurrencyRate(currencyRate);
 		lastInternet = pref.getLong("com.bbpp.unitconverter.lastinternet", lastInternet);
-		score = pref.getInt("com.bbpp.unitconverter.score", 0);
-				
-		if (++score > 10) {
-			showAd = true;
-		} else {
-			AppConnect appConn = AppConnect.getInstance(this);
-			if (appConn != null)
-				appConn.awardPoints(1, this);
-		}
+		currentPosition = pref.getInt("com.bbpp.unitconverter.pos", 1);
 
-		if (System.currentTimeMillis() - lastInternet > 86400000L) {
-			/* Download currency */
+		/* Download currency */
+		if (System.currentTimeMillis() - lastInternet > 86400000L) {			
 			ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 			if (networkInfo != null && networkInfo.isConnected()) {
-				new DownloadCurrencyTask().execute();
+				if (downloadTask != null) {
+					downloadTask.m_activity = this;					
+				} else {
+					downloadTask = new DownloadCurrencyTask();
+					downloadTask.m_activity = this;
+					downloadTask.execute();
+				}
+				//AppConnect appConn = AppConnect.getInstance(this);
+				//appConn.checkUpdate(this);
 			}			
 		}
 
-		setContentView(R.layout.activity_main);
-		
-		mTitle = getTitle();		
-		mDrawerTitle = getResources().getString(R.string.drawer_title);		
-		mPlanetTitles = getResources().getStringArray(R.array.planets_array);
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		mDrawerList = (ListView) findViewById(R.id.left_drawer);
+		setContentView(R.layout.activity_main);	
 
-		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-		// Set the adapter for the list view
-		mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mPlanetTitles));
-		// Set the list's click listener
-		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+		setBehindContentView(R.layout.menu_frame);
+		if (savedInstanceState == null) {
+			FragmentTransaction t = this.getSupportFragmentManager().beginTransaction();
+			mFrag = new DrawerListFrame();
+			t.replace(R.id.menu_frame, mFrag);
+			t.commit();
+		} else {
+			mFrag = (ListFragment)this.getSupportFragmentManager().findFragmentById(R.id.menu_frame);
+		}
 
-		// enable ActionBar app icon to behave as action to toggle nav drawer
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActionBar().setHomeButtonEnabled(true);
-
-		mDrawerToggle = new ActionBarDrawerToggle(
-				this,                  /* host Activity */
-				mDrawerLayout,         /* DrawerLayout object */
-				R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
-				R.string.drawer_open,  /* "open drawer" description */
-				R.string.drawer_close  /* "close drawer" description */
-				) {
-
-			/** Called when a drawer has settled in a completely closed state. */
-			public void onDrawerClosed(View view) {
-				getActionBar().setTitle(mTitle);
-			}
-
-			/** Called when a drawer has settled in a completely open state. */
-			public void onDrawerOpened(View drawerView) {
-				getActionBar().setTitle(mDrawerTitle);
-			}
-		};
-
-		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		menu = getSlidingMenu();
+		menu.setMode(SlidingMenu.LEFT);
+		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+		menu.setShadowWidth(16);
+		menu.setShadowDrawable(R.drawable.drawer_shadow);
+		menu.setBehindOffset(128);
+		menu.setFadeDegree(0.35f);
 
 		if (savedInstanceState == null) {			
-			selectItem(pref.getInt("com.bbpp.unitconverter.pos", 1));
+			selectItem(currentPosition);			
 		}
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {		
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
@@ -133,8 +122,7 @@ public class MainActivity extends Activity implements UpdatePointsNotifier {
 		for (int i = 0; i < currencyRate.length; ++i)
 			edit.putFloat("com.bbpp.unitconverter.currencyrate" + i, currencyRate[i]);
 		edit.putInt("com.bbpp.unitconverter.pos", currentPosition);
-		edit.putLong("com.bbpp.unitconverter.lastinternet", lastInternet);
-		edit.putInt("com.bbpp.unitconverter.score", score);
+		edit.putLong("com.bbpp.unitconverter.lastinternet", lastInternet);		
 		edit.commit();
 		super.onPause();
 	}
@@ -144,93 +132,104 @@ public class MainActivity extends Activity implements UpdatePointsNotifier {
 		AppConnect appConn = AppConnect.getInstance(this);
 		if (appConn != null)
 			appConn.finalize();
+
+		if (downloadTask != null) {
+			downloadTask.m_activity = null;
+			downloadTask.cancel(false);
+		}	
+		
+		mainActivity = null;
+
 		super.onDestroy();
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-
-	private class DrawerItemClickListener implements ListView.OnItemClickListener {
-		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			selectItem(position);
-		}
-	}
-
-	/** Swaps fragments in the main content view */
-	private void selectItem(int position) {
-
-		currentPosition = position;
-
-		Fragment fragment = new UnitFragment();
-		Bundle args = new Bundle();
-		args.putInt(UnitFragment.ARG_UNIT_LIST, position);
-		args.putBoolean(UnitFragment.ARG_SHOW_AD, showAd);
-		fragment.setArguments(args);
-
-		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
-		// Highlight the selected item, update the title, and close the drawer
-		mDrawerList.setItemChecked(position, true);
-		setTitle(mPlanetTitles[position]);
-		mDrawerLayout.closeDrawer(mDrawerList);		
-	}
-
-	@Override
-	public void setTitle(CharSequence title) {
-		mTitle = title;
-		getActionBar().setTitle(mTitle);
-	}
-
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		// Sync the toggle state after onRestoreInstanceState has occurred.
-		mDrawerToggle.syncState();
-	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		mDrawerToggle.onConfigurationChanged(newConfig);
-	}
+	}	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Pass the event to ActionBarDrawerToggle, if it returns
-		// true, then it has handled the app icon touch event
-		if (mDrawerToggle.onOptionsItemSelected(item)) {
-			return true;
-		}
 		switch (item.getItemId()) {
-		case R.id.action_settings:
-			AppConnect.getInstance(this).showFeedback();
-
-			return true;
+		case android.R.id.home:
+			toggle();
+			break;
+		case R.id.action_recommend:
+			AppConnect appConn = AppConnect.getInstance(this);
+			if (appConn != null)
+				appConn.showOffers(this);
+			break;
+		case R.id.action_feedback:
+			appConn = AppConnect.getInstance(this);
+			if (appConn != null)
+				appConn.showFeedback();
+			break;		
 		}
-
 		return super.onOptionsItemSelected(item);
 	}
 
-	private class DownloadCurrencyTask extends AsyncTask<Void, Void, ArrayList<Float>> {
+	@Override
+	public void onBackPressed() {
+		if (menu.isMenuShowing()) {
+			menu.showContent();
+		} else {
+			super.onBackPressed();
+		}
+	}	
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.main, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	/** Swaps fragments in the main content view */
+	public void selectItem(int position) {
+
+		if (menu.isMenuShowing()) {
+			menu.showContent();
+		}
+
+		currentPosition = position;		
+
+		Fragment fragment = new UnitFragment();
+		Bundle args = new Bundle();
+		args.putInt(UnitFragment.ARG_UNIT_LIST, position);		
+		fragment.setArguments(args);
+
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commitAllowingStateLoss();
+
+		setTitle(mPlanetTitles[position]);
+	}
+
+	@Override
+	public void setTitle(CharSequence title) {		
+		getSupportActionBar().setTitle(title);
+	}
+	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_MENU) {
+	    	menu.toggle();
+	        return true;
+	    }
+	    return super.onKeyUp(keyCode, event);
+	}
+
+	private static class DownloadCurrencyTask extends AsyncTask<Void, Void, ArrayList<Float>> {
+
+		private MainActivity m_activity = null;
 
 		@Override
 		protected void onPostExecute(ArrayList<Float> result) {
-			for (int i = 0; i < result.size(); ++i)
-				currencyRate[i] = result.get(i).floatValue();
-			UnitList.setCurrencyRate(currencyRate);
-			if (currentPosition == 0) {
-				//((FrameLayout)MainActivity.this.findViewById(R.id.content_frame)).invalidate();
-				MainActivity.this.selectItem(currentPosition);
+
+			if (m_activity != null) {
+				for (int i = 0; i < result.size(); ++i)
+					m_activity.currencyRate[i] = result.get(i).floatValue();
+				UnitList.setCurrencyRate(m_activity.currencyRate);
+				if (m_activity.currentPosition == 0) {				
+					m_activity.selectItem(m_activity.currentPosition);
+				}
+				m_activity.lastInternet = System.currentTimeMillis(); 
+				Toast toast = Toast.makeText(m_activity, m_activity.getResources().getString(R.string.update_message), Toast.LENGTH_SHORT);
+				toast.show();
 			}
-			lastInternet = System.currentTimeMillis(); 
-			Toast toast = Toast.makeText(MainActivity.this, getResources().getString(R.string.update_message), Toast.LENGTH_SHORT);
-			toast.show();
 		}
 
 		@Override
@@ -253,7 +252,7 @@ public class MainActivity extends Activity implements UpdatePointsNotifier {
 					String line;
 					int i = 0;
 					while ((line = reader.readLine()) != null) {						
-						float rate = currencyRate[i];
+						float rate = m_activity.currencyRate[i];
 						String[] tokens = line.split(",");
 						if (tokens.length >= 2) {
 							try {
@@ -288,25 +287,6 @@ public class MainActivity extends Activity implements UpdatePointsNotifier {
 			}
 			return resList;
 		}
-
-
-
 	}
-
-	@Override
-	public void getUpdatePoints(String arg0, int point) {
-		
-		if (point > 10) {
-			score = point;
-		}
-
-	}
-
-	@Override
-	public void getUpdatePointsFailed(String arg0) {
-		
-
-	}
-
 
 } 

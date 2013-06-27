@@ -380,7 +380,8 @@ public abstract class UnitFormat extends Format {
                 throws ParseException {
             int startIndex = pos.getIndex();
             String name = readIdentifier(csq, pos);
-            Unit unit = unitFor(name);
+            @SuppressWarnings("rawtypes")
+			Unit unit = unitFor(name);
             check(unit != null, name + " not recognized", csq, startIndex);
             return unit;            
         }
@@ -389,6 +390,7 @@ public abstract class UnitFormat extends Format {
         @Override
         public Unit<? extends Quantity> parseProductUnit(CharSequence csq, ParsePosition pos) 
                 throws ParseException {
+        	@SuppressWarnings("rawtypes")
             Unit result = Unit.ONE;
             int token = nextToken(csq, pos);
             switch (token) {
