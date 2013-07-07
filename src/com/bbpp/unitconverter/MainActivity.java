@@ -8,6 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import cn.waps.AppConnect;
+
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
@@ -48,6 +50,8 @@ public class MainActivity extends SlidingFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
 
+		AppConnect.getInstance(this);
+		
 		getSupportActionBar().setIcon(R.drawable.drawer_icon);
 		getSupportActionBar().setHomeButtonEnabled(true);
 

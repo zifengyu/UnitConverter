@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bbpp.unitconverter"
     android:versionCode="4"
-    android:versionName="3.1" >
+    android:versionName="3.5" >
 
     <uses-sdk
         android:minSdkVersion="4"
@@ -31,7 +31,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>        
+        </activity>
+        <activity
+            android:name="cn.waps.OffersWebView"
+            android:configChanges="keyboardHidden|orientation" />
+        <meta-data
+            android:name="WAPS_ID"
+            android:value="1e893136c07aaa5a3babaf8a3f3d26a6" />
+        <meta-data
+            android:name="WAPS_PID"
+            android:value="WAPS" />
     </application>
 
 </manifest>

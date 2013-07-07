@@ -2,6 +2,8 @@ package com.bbpp.unitconverter;
 
 import java.util.ArrayList;
 
+import cn.waps.AdView;
+
 import android.content.Context;
 import android.os.Bundle;
 
@@ -14,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -64,6 +68,13 @@ public class UnitFragment extends Fragment {
 		scrollView.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
 
 		TableLayout tableLayout = (TableLayout)(view.findViewById(R.id.unit_table_layout));
+		
+		LinearLayout con = new LinearLayout(getActivity());
+		con.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+		new AdView(getActivity(), con).DisplayAd();
+		
+		tableLayout.addView(con);
+		
 
 		for (int i = 0; i < unitList.size(); ++i) {
 			TableRow rowView = (TableRow)inflater.inflate(R.layout.unit_row, tableLayout, false);
