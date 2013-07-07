@@ -13,8 +13,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
-import cn.waps.AppConnect;
-
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -28,8 +26,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.view.KeyEvent;
-//import android.app.Fragment;
-//import android.app.FragmentManager;
 import android.widget.Toast;
 
 public class MainActivity extends SlidingFragmentActivity {
@@ -56,8 +52,6 @@ public class MainActivity extends SlidingFragmentActivity {
 		getSupportActionBar().setHomeButtonEnabled(true);
 
 		mainActivity = this;
-
-		AppConnect.getInstance(this);
 
 		mPlanetTitles = getResources().getStringArray(R.array.planets_array);
 
@@ -129,10 +123,7 @@ public class MainActivity extends SlidingFragmentActivity {
 
 	@Override
 	protected void onDestroy() {
-		AppConnect appConn = AppConnect.getInstance(this);
-		if (appConn != null)
-			appConn.finalize();
-
+		
 		if (downloadTask != null) {
 			downloadTask.m_activity = null;
 			downloadTask.cancel(false);
@@ -149,15 +140,9 @@ public class MainActivity extends SlidingFragmentActivity {
 		case android.R.id.home:
 			toggle();
 			break;
-		case R.id.action_recommend:
-			AppConnect appConn = AppConnect.getInstance(this);
-			if (appConn != null)
-				appConn.showOffers(this);
+		case R.id.action_recommend:			
 			break;
-		case R.id.action_feedback:
-			appConn = AppConnect.getInstance(this);
-			if (appConn != null)
-				appConn.showFeedback();
+		case R.id.action_feedback:			
 			break;		
 		}
 		return super.onOptionsItemSelected(item);
@@ -174,7 +159,7 @@ public class MainActivity extends SlidingFragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.main, menu);
+		//getSupportMenuInflater().inflate(R.menu.main, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 

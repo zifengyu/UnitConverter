@@ -2,8 +2,6 @@ package com.bbpp.unitconverter;
 
 import java.util.ArrayList;
 
-import cn.waps.AdView;
-
 import android.content.Context;
 import android.os.Bundle;
 
@@ -16,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
