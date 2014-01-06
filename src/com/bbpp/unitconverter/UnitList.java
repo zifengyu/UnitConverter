@@ -66,7 +66,7 @@ public class UnitList<Q extends Quantity> implements Serializable {
 		currencyList.add("台币\nTWD", Dimensionless.UNIT);
 		currencyList.add("日元\nJPY",Dimensionless.UNIT);
 		currencyList.add("加拿大元\nCAD",Dimensionless.UNIT);
-		currencyList.add("澳大利亚元\nAUD",Dimensionless.UNIT);
+		currencyList.add("澳大利亚\nAUD",Dimensionless.UNIT);
 		currencyList.add("新西兰元\nNZD",Dimensionless.UNIT);
 		currencyList.add("瑞士法郎\nCHF", Dimensionless.UNIT);
 		currencyList.add("新加坡元\nSGD", Dimensionless.UNIT);
@@ -144,8 +144,8 @@ public class UnitList<Q extends Quantity> implements Serializable {
 		volumeList.add("英加仑\nUK gal", NonSI.GALLON_UK);
 		volumeList.add("夸脱\nqt", NonSI.OUNCE_LIQUID_US.times(32));
 		volumeList.add("品脱\npt", NonSI.OUNCE_LIQUID_US.times(16));				
-		volumeList.add("美制液体盎司\nfl oz", NonSI.OUNCE_LIQUID_US);		
-		volumeList.add("英制液体盎司\nfl oz", NonSI.OUNCE_LIQUID_UK);
+		volumeList.add("美制盎司\nfl oz", NonSI.OUNCE_LIQUID_US);		
+		volumeList.add("英制盎司\nfl oz", NonSI.OUNCE_LIQUID_UK);
 		volumeList.add("杯\nc", NonSI.OUNCE_LIQUID_US.times(8));
 		volumeList.add("汤匙\ntbs", NonSI.OUNCE_LIQUID_US.divide(2));
 		volumeList.add("茶匙\ntsp", NonSI.OUNCE_LIQUID_US.divide(6));

@@ -12,17 +12,7 @@
             android:id="@+id/unit_table_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="0" >
-
-            <!-- 
-            <TableRow android:layout_width="match_parent" >
-
-                <LinearLayout
-                    android:id="@+id/AdLinearLayout"
-                    android:layout_width="fill_parent"
-                    android:layout_height="50dip"
-                    android:gravity="center_horizontal" />
-            </TableRow>
-            -->
+            android:stretchColumns="0" 
+            android:layout_marginTop="8dp">          
         </TableLayout>
     </ScrollView>

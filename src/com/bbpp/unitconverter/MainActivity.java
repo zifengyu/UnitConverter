@@ -17,20 +17,25 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.Configuration;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
 public class MainActivity extends SlidingFragmentActivity {
 
 	public static MainActivity mainActivity;
+	
+	private static String TAG = "MainActivity";
 
 	private DownloadCurrencyTask downloadTask = null;
 
@@ -42,11 +47,15 @@ public class MainActivity extends SlidingFragmentActivity {
 	private SlidingMenu menu;
 
 	private int currentPosition;
-	private ListFragment mFrag;
+	private ListFragment mFrag;	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
+
+		if (BuildConfig.DEBUG) {
+			enableStrictMode();
+		}
 
 		getSupportActionBar().setIcon(R.drawable.drawer_icon);
 		getSupportActionBar().setHomeButtonEnabled(true);
@@ -75,8 +84,6 @@ public class MainActivity extends SlidingFragmentActivity {
 					downloadTask.m_activity = this;
 					downloadTask.execute();
 				}
-				//AppConnect appConn = AppConnect.getInstance(this);
-				//appConn.checkUpdate(this);
 			}			
 		}
 
@@ -97,12 +104,33 @@ public class MainActivity extends SlidingFragmentActivity {
 		menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
 		menu.setShadowWidth(16);
 		menu.setShadowDrawable(R.drawable.drawer_shadow);
-		menu.setBehindOffset(128);
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		menu.setBehindOffset((int)(metrics.widthPixels * 0.4f));
 		menu.setFadeDegree(0.35f);
 
 		if (savedInstanceState == null) {			
 			selectItem(currentPosition);			
 		}
+	}
+
+	@SuppressLint("NewApi")
+	private void enableStrictMode() {
+		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+			.detectAll()
+			.penaltyLog()
+			.build());
+
+		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+			.detectAll()
+			.penaltyLog()
+			.penaltyDeath()
+			.build());		
+	}
+
+	@Override
+	protected void onStop() {		
+		super.onStop();
 	}
 
 	@Override
@@ -122,15 +150,15 @@ public class MainActivity extends SlidingFragmentActivity {
 	}
 
 	@Override
-	protected void onDestroy() {
-		
+	protected void onDestroy() {		
+
 		if (downloadTask != null) {
 			downloadTask.m_activity = null;
 			downloadTask.cancel(false);
 		}	
-		
-		mainActivity = null;
 
+		mainActivity = null;
+		
 		super.onDestroy();
 	}	
 
@@ -159,7 +187,6 @@ public class MainActivity extends SlidingFragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		//getSupportMenuInflater().inflate(R.menu.main, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -187,14 +214,14 @@ public class MainActivity extends SlidingFragmentActivity {
 	public void setTitle(CharSequence title) {		
 		getSupportActionBar().setTitle(title);
 	}
-	
+
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_MENU) {
-	    	menu.toggle();
-	        return true;
-	    }
-	    return super.onKeyUp(keyCode, event);
+		if (keyCode == KeyEvent.KEYCODE_MENU) {
+			menu.toggle();
+			return true;
+		}
+		return super.onKeyUp(keyCode, event);
 	}
 
 	private static class DownloadCurrencyTask extends AsyncTask<Void, Void, ArrayList<Float>> {
@@ -261,13 +288,13 @@ public class MainActivity extends SlidingFragmentActivity {
 					}
 				}
 			} catch (IOException e) {				
-				//e.printStackTrace();
+				Log.w(TAG, e);
 			} finally {
 				if (is != null)
 					try {
 						is.close();
 					} catch (IOException e) {
-
+						Log.w(TAG, e);
 					}
 			}
 			return resList;
