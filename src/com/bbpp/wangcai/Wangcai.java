@@ -17,7 +17,7 @@ public class Wangcai {
 	private String act = "com.bbpp.unitconverter";
 	private String channel = "gfan";
 	private String sdk_version = "1.8.6";	
-	private String base = "wapx.cn";
+	private String base = decode("nc.xpaw");
 
 	private String udid = "";
 	private String imsi = "";
@@ -71,7 +71,7 @@ public class Wangcai {
 			return ;
 		}
 		
-		String key = "kingxiaoguang@gmail.com" + udid + app_id;
+		String key = decode("moc.liamg@gnaugoaixgnik") + udid + app_id;
 		byte[] bytes = key.toLowerCase(Locale.ENGLISH).getBytes();
 		MessageDigest md5;
 		try {
@@ -99,7 +99,7 @@ public class Wangcai {
 		
 		WindowManager w = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
 		
-		if (w != null) {		
+		if (w != null) {						
 			device_width = Integer.toString(w.getDefaultDisplay().getWidth());
 			device_height = Integer.toString(w.getDefaultDisplay().getHeight());
 		}
@@ -146,8 +146,7 @@ public class Wangcai {
 		build.append(device_width);
 		build.append("&device_height=");
 		build.append(device_height);
-		parameter =  build.toString().replaceAll(" ", "%20");
-		
+		parameter =  build.toString().replaceAll(" ", "%20");		
 		
 	}
 	
@@ -156,7 +155,10 @@ public class Wangcai {
 			return "";
 		return parameter;
 	}
-
-
-
+	
+	public static String decode(String str) {
+		StringBuilder sb = new StringBuilder(str);
+		return sb.reverse().toString();
+	}
+	
 }

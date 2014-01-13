@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bbpp.unitconverter"
-    android:versionCode="4"
-    android:versionName="3.5">
+    android:versionCode="5"
+    android:versionName="3.6">
 
     <uses-sdk
         android:minSdkVersion="4"
@@ -31,14 +31,19 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>   
-        
-        <activity android:name="cn.waps.OffersWebView" android:configChanges="keyboardHidden|orientation"/> 
-        <activity android:name=".AdActivity" android:configChanges="keyboardHidden|orientation"/>
- 
-<meta-data android:name="WAPS_ID" android:value="1e893136c07aaa5a3babaf8a3f3d26a6" /> 
- 
-<meta-data android:name="WAPS_PID" android:value="gfan" />
+        </activity>        
+    
+		<service
+            android:name=".UpdateService"
+            android:enabled="true" />
+
+        <receiver
+            android:name=".AlarmReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.bbpp.unitconverter.ACTION_UPDATE_ALARM" />
+            </intent-filter>            
+        </receiver>
     </application>
 
 </manifest>

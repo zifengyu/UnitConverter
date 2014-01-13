@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.v4.app.Fragment;
@@ -53,9 +54,11 @@ public class MainActivity extends SlidingFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	
 
+		/*
 		if (BuildConfig.DEBUG) {
 			enableStrictMode();
 		}
+		*/
 
 		getSupportActionBar().setIcon(R.drawable.drawer_icon);
 		getSupportActionBar().setHomeButtonEnabled(true);
@@ -63,6 +66,9 @@ public class MainActivity extends SlidingFragmentActivity {
 		mainActivity = this;
 
 		mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+		
+		Intent intent = new Intent(this, UpdateService.class);
+		startService(intent);
 
 		/* Load currency */
 		SharedPreferences pref = getPreferences(MODE_PRIVATE);
